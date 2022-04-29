@@ -1,142 +1,232 @@
+/***********************************
+	A game based on exiting a maze.
+  If you touch any obstacles, you have to start over.
+  Sometimes you have to click on a door to get passed.
+************************************/
 
-let xSpeed = (3, 8);
-let ySpeed = (-8, -3);
-let xBall = Math.floor(Math.random() * 400) + 50;
-let yBall = 50;
-let score = 0;
-let bg;
-let brick1;
-let brick2;
-let brick3;
-let brick4;
-let brickimage;
-let holdL;
-let resetButton;
+var doorOpen = 0;
+var ready = -1;
+var endMsg = "";
+var c;
+var Instr = "";
+var Instr2 = "";
+var scope;
+
+
 function setup() {
-   bg = loadImage('background/brickgame background.jpg')
-  brickImage = loadImage('background/brickimage.png')
-  holdL =loadImage('background/GameoverSMB.webp')
-  createCanvas(500, 500);
-  brick1 = new brick();
-  //brick2 = new brick();
-  //brick3 = new brick();
-  //brick4 = new brick();
-  resetButton = createButton("Reset");
-  resetButton.size(60,25)
-  resetButton.position(0,0)
-  resetButton.mousePressed(reset);
-
- 
+  createCanvas(600, 450);
+  background(220);
+  c = 'blue'
 }
 
 function draw() {
-  background(bg);
-  
-  fill('blue');//for color you need to have it iin ''
-  rect(mouseX, 475, 90, 15); //paddle that the ball is going to bounce off of
+  var d = 220;
+  // Reset background
+	if(mouseX > 0 && mouseX < 120 && mouseY > 0 && mouseY < 30) {
+    background(220)
+  }
   noStroke();
-  
-  //funcions
-  move();
-  bounce();
-  ballImage();
-  bounceOffPaddle();
-  endgame();
-  
-  
-  fill('black');
-  rect(200,0,120,25);
-  
-  //need score 
-  fill('white');
+  // Entrance Box
   textSize(20);
-  text("Score: " + score, 210, 20);
+  fill('blue');
+  rect(0,0, 200, 30);
+  fill('yellow');
+  text("Entrance", 20, 20);
   
- 
+  // Exit Box
+  fill('green');
+  rect(530,0, 70, 30);
+  fill(255);
+  text("Exit", 550, 20);
   
-  brick1.display();
- // brick2.display();
- // brick3.display();
- // brick4.display();
-  brick1.bounceoffbrick()
- // brick2.bounceoffbrick()
- // brick3.bounceoffbrick()
- // brick4.bounceoffbrick()
+  // Obstacles and Walls
+  fill('black');
+  // Big Walls
+  rect(200,0, 10, 300);
+  rect(200, 300, 300, 10);
+  rect(100, 200, 10, 100);
+  rect(150,300, 10, 100);
+  rect(80, 350, 70, 10);
+  rect(150, 335, 100, 10);
+  rect(250, 335, 10, 70);
+  rect(350, 250, 10, 150);
+  rect(420, 350, 10, 100);
+  ellipse(0, 300, 150);
+  ellipse(250, 450, 100);
+  ellipse(580, 420, 100);
+  // End Maze
+  rect(400,250, 210, 10);
+  rect(500,120, 100, 10);
+  ellipse(350, 150, 100);
+  ellipse(450, 80, 80);
+  // Bubble Run
+  rect(100, 100, 100, 10);
+  rect(40, 100, 10, 150);
+  rect(50, 150, 100, 10);
+  rect(100, 200, 100, 10);
   
-}
-function reset(){
-  score =0;
-  background(bg);
-  xSpeed = (3, 8);
-  ySpeed = (-8, -3);
-  xBall = Math.floor(Math.random() * 400) + 50;
-  yBall = 50
-}
-function move() {
-  xBall += xSpeed;
-  yBall += ySpeed;
-}
-//bounce off the walls fucntion
-function bounce() {
-
-  if (xBall < 10 || xBall > 500 - 10) {
-    xSpeed *= -1;
+  // Hidden door
+	
+  
+  // Play
+  if(mouseX > 0 && mouseX < 120 && mouseY > 0 && mouseY < 30) {
+    ready = 1;
+    scope = 0;
+    endMsg = "";
   }
-  if (yBall < 10 || yBall > 500 - 10) {
-    ySpeed *= -1;
+  if(ready == 1) {
+    strokeWeight(2);
+    stroke('orange');
+    line(mouseX, mouseY, pmouseX, pmouseY);
   }
   
-}
-//the ball isn't auto seen for some reason so you gotta have this shit
-function ballImage() {
-  fill('red');
-  ellipse(xBall, yBall, 20, 20);
-}
-//need stupid actual ball fucntion
-//need paddle function
- function bounceOffPaddle(){
-  if ((xBall > mouseX && xBall < mouseX + 90) && (yBall + 10 >= 475)) {
-    xSpeed *= -1;
-    ySpeed *= -1;
-     
+  // Win Scenario
+  if(ready == 1 && mouseX > 530 && mouseX < 600 && mouseY > 0 && mouseY < 30) {
+      ready = 0;
+      scope = 1;
+    
+      endMsg = "Well Done!";
+    	c = 'blue';
   }
-}
-function endgame(){
-      if (yBall >= 490){
-        background(holdL);
-        xSpeed=0;
-        ySpeed=0;
-      }
-    }
-//need bricks
-  class brick {
-  constructor() {
-    this.xbrick = random(25,475);
-    this.ybrick = 100;
-    this.diameter = 50;
-    //this.brickDepth = this.
+  // Opening message
+  if(ready == -1) {
+    c = 'green';
+    endMsg = "You Got This!";
+    Instr = "Your goal is to hover over the "
+    Instr2 = " entrance to start, then avoid all "
+    Instr3 = "obstacles to get to the exit."
   }
-    display() {
-      
-    image(brickImage,this.xbrick, this.ybrick, this.diameter , this.diameter );
-     // fill('white');
-     // circle(this.xbrick,this.ybrick,this.diameter);
-  }
-    bounceoffbrick(){
-  if ((xBall > this.xbrick && xBall < this.xbrick + 50 ) && (yBall <= this.ybrick)){
-    xSpeed *= -1;
-    ySpeed *= -1;
-    score++;
-    this.xbrick = random(25,450);
-    this.ybrick = 100;
-    this.diameter = 50;
-  if (yBall<= this.ybrick +50){
+  	textSize(60);
+    fill(c);
+    text(endMsg, width/2-200, height/2);
+   
+    textSize(12)
+    fill(0)
+    text(Instr, 15, 45);
   
+    textSize(12)
+    fill(0)
+    text(Instr2, 15, 65);
+  
+    textSize(12)
+    fill(0)
+    text(Instr3, 15, 85);
+  
+  // Lose Scenarios
+  if (scope != 1) {
+    
+  	rect(340,0, 10, 30);
+    if(mouseX > 340 && mouseX < 350 && mouseY > 0 && mouseY < 30) {
+      ready = 0;
+      endMsg = "Barrier Hit!";
+      c = 'red'
+  	}
+  
+    
+  // rect(40, 100, 10, 150);
+	if(mouseX > 40 && mouseX < 50 && mouseY > 100 && mouseY < 250) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
   }
-     if ((xBall > this.xbrick && xBall < this.xbrick + 50 )&&(yBall > this.ybrick)){
-     
-     }
-    }
+  // rect(50, 150, 100, 10)
+  if(mouseX > 50 && mouseX < 150 && mouseY > 150 && mouseY < 160) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 100 && mouseX < 200 && mouseY > 100 && mouseY < 110) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 100 && mouseX < 200 && mouseY > 100 && mouseY < 110) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 400 && mouseX < 610 && mouseY > 250 && mouseY < 260) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 500 && mouseX < 600 && mouseY > 120 && mouseY < 130) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 420 && mouseX < 430 && mouseY > 350 && mouseY < 450) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 350 && mouseX < 360 && mouseY > 250 && mouseY < 400) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 250 && mouseX < 260 && mouseY > 335 && mouseY < 405) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 150 && mouseX < 250 && mouseY > 335 && mouseY < 345) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 80 && mouseX < 150 && mouseY > 350 && mouseY < 360) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 150 && mouseX < 160 && mouseY > 300 && mouseY < 400) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 100 && mouseX < 110 && mouseY > 200 && mouseY < 300) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 200 && mouseX < 500 && mouseY > 300 && mouseY < 310) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(mouseX > 200 && mouseX < 210 && mouseY > 10 && mouseY < 300) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  // ellipse(0, 300, 150);
+  if(dist(0,300, mouseX,mouseY) < 75) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  // ellipse(250 ,450, 100);
+  if(dist(250,450, mouseX,mouseY) < 50) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(dist(580,420, mouseX,mouseY) < 50) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(dist(350,150, mouseX,mouseY) < 50) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
+  if(dist(450,80, mouseX,mouseY) < 40) {
+  	ready = 0;
+  	endMsg = "Barrier Hit!";
+    c = 'red'
+  }
   }
 }
-
+  
