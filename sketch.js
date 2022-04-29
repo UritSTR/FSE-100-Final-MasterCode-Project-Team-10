@@ -1,146 +1,142 @@
-let x = 300;
-let y = 500;
-let diameter = 20;
-let dragging = false;
-let timer = 2;
 
-function preload(){ 
-doggo = loadImage("LeImage/doggo.jpg")
-apple = loadImage("LeImage/apple.jpg")
-orang = loadImage("LeImage/orange.jpg")  
-doge = loadImage("LeImage/doge.jpg")
-Restart = loadImage("LeImage/Restart.png")
-}
+let xSpeed = (3, 8);
+let ySpeed = (-8, -3);
+let xBall = Math.floor(Math.random() * 400) + 50;
+let yBall = 50;
+let score = 0;
+let bg;
+let brick1;
+let brick2;
+let brick3;
+let brick4;
+let brickimage;
+let holdL;
+let resetButton;
 function setup() {
-  createCanvas(550, 600);
-  back = color(255, 160, 0);
+   bg = loadImage('background/brickgame background.jpg')
+  brickImage = loadImage('background/brickimage.png')
+  holdL =loadImage('background/GameoverSMB.webp')
+  createCanvas(500, 500);
+  brick1 = new brick();
+  //brick2 = new brick();
+  //brick3 = new brick();
+  //brick4 = new brick();
+  resetButton = createButton("Reset");
+  resetButton.size(60,25)
+  resetButton.position(0,0)
+  resetButton.mousePressed(reset);
+
+ 
 }
-//Declare variables n stuff
-var winMsg = "";
-var win = 0;
-var loseMsg = "";
-var apple;
-var cat;
-var dog;
-var choice;
-var imgWidth = 100;
-var imgHeight = 100;
-let sources
-let buttonArray
-var lvlMsg = "";
-var complete = "";
-var startMsg = "";
-var done;
-var round2 = "";
-
-  
-
 
 function draw() {
-  background("lightgreen");
-  textSize(20);
-  rect(20, 0, 200, 200);
-  fill(255, 255, 255);
-  rect(330,0,200,200);
-  fill(255, 255, 255);
-  image(doggo,20,0,200,200);
-image(doge,330,0,200,200);
+  background(bg);
+  
+  fill('blue');//for color you need to have it iin ''
+  rect(mouseX, 475, 90, 15); //paddle that the ball is going to bounce off of
   noStroke();
-  ellipse(x, y, diameter, diameter);
+  
+  //funcions
+  move();
+  bounce();
+  ballImage();
+  bounceOffPaddle();
+  endgame();
+  
+  
   fill('black');
-  if(x == 300 && y == 500){
-    text(startMsg, 100, 280);
-    textSize(10);
-    startMsg = "Drag the circle over doge!";
-  }
+  rect(200,0,120,25);
   
-  if(win == 1){
-    
-  background("lightgreen");
+  //need score 
+  fill('white');
   textSize(20);
-  //rect(20, 0, 200, 200);
-  fill(255, 255, 255);
-  //rect(330,0,200,200);
-  fill(255, 255, 255);
-  image(apple,20,400,200,200);
-image(orang,330,400,200,200);
-  noStroke();
-  ellipse(x, y, diameter, diameter);
-  fill('black');
-    //if(x <)
-  }
-  if(frameCount % 60 == 0 && timer > 0){
-    timer --;
-  }
-  if(win == 1){
-    if(timer != 0){fill(0);
-    text(winMsg, 100, 280);
-    textSize(10);
-    win = 1;
-    winMsg = "You matched it! Now select the orange!";
-      
-      
-    }
-    if(x > 20 && x < 220 && y > 400 && y < 600){
-      fill('red');
-      text(loseMsg, 200, 300);
-      loseMsg = "Try again.";
-    }
-  }
+  text("Score: " + score, 210, 20);
   
-  if(dragging){
-    x = mouseX;
-    y = mouseY;
-  }
-  //Win scenario
-  noStroke();
-  ellipse(x, y, diameter, diameter);
-  fill(0, 0, 0);
-  if(x > 330 && x < 600 && y > 0 && y < 200) {
-    print('Match');
-    fill(0);
-    text(winMsg, 100, 280);
-    textSize(10);
-    win = 1;
-    winMsg = "You matched it! Now the orange!";
-  }
-    if(x > 330 && x < 600 && y > 400 && y < 600) {
-    print('Complete');
-    fill(0);
-    text(complete, 100, 280);
-    textSize(10);
-    complete = "Yay!";
-      done = 1;
+ 
+  
+  brick1.display();
+ // brick2.display();
+ // brick3.display();
+ // brick4.display();
+  brick1.bounceoffbrick()
+ // brick2.bounceoffbrick()
+ // brick3.bounceoffbrick()
+ // brick4.bounceoffbrick()
+  
 }
-    
-    }
-      
-  
-    //Lose scenario
-    if(x > 0 && x < 200 && y > 0 && y < 200) {
-      print('Mismatch');
-      fill('red');
-      text(loseMsg, 200, 300)
-      loseMsg = "Try again.";
+function reset(){
+  score =0;
+  background(bg);
+  xSpeed = (3, 8);
+  ySpeed = (-8, -3);
+  xBall = Math.floor(Math.random() * 400) + 50;
+  yBall = 50
+}
+function move() {
+  xBall += xSpeed;
+  yBall += ySpeed;
+}
+//bounce off the walls fucntion
+function bounce() {
+
+  if (xBall < 10 || xBall > 500 - 10) {
+    xSpeed *= -1;
+  }
+  if (yBall < 10 || yBall > 500 - 10) {
+    ySpeed *= -1;
   }
   
-  
-//Drag ellipse
-
-function mousePressed() {
-  
-  if(dist(x, y, mouseX, mouseY) < diameter/2){
-    dragging = true;
+}
+//the ball isn't auto seen for some reason so you gotta have this shit
+function ballImage() {
+  fill('red');
+  ellipse(xBall, yBall, 20, 20);
+}
+//need stupid actual ball fucntion
+//need paddle function
+ function bounceOffPaddle(){
+  if ((xBall > mouseX && xBall < mouseX + 90) && (yBall + 10 >= 475)) {
+    xSpeed *= -1;
+    ySpeed *= -1;
+     
   }
 }
-
-function mouseReleased(){
-  dragging = false;
+function endgame(){
+      if (yBall >= 490){
+        background(holdL);
+        xSpeed=0;
+        ySpeed=0;
+      }
+    }
+//need bricks
+  class brick {
+  constructor() {
+    this.xbrick = random(25,475);
+    this.ybrick = 100;
+    this.diameter = 50;
+    //this.brickDepth = this.
+  }
+    display() {
+      
+    image(brickImage,this.xbrick, this.ybrick, this.diameter , this.diameter );
+     // fill('white');
+     // circle(this.xbrick,this.ybrick,this.diameter);
+  }
+    bounceoffbrick(){
+  if ((xBall > this.xbrick && xBall < this.xbrick + 50 ) && (yBall <= this.ybrick)){
+    xSpeed *= -1;
+    ySpeed *= -1;
+    score++;
+    this.xbrick = random(25,450);
+    this.ybrick = 100;
+    this.diameter = 50;
+  if (yBall<= this.ybrick +50){
+  
+  }
+     if ((xBall > this.xbrick && xBall < this.xbrick + 50 )&&(yBall > this.ybrick)){
+     
+     }
+    }
+  }
 }
-
-
-
-
-
-
 
